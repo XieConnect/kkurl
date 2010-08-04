@@ -1,0 +1,51 @@
+#!/usr/bin/env ruby
+
+# Translate download URL's into the unified http:// form
+# Supports Thunder(xunlei), Flashget(kuaiche), qqdl(QQ Storm)
+#
+# Reference: http://hi.baidu.com/xicao54007/blog/item/5367e8f45a6e98d5f3d38558.html
+#
+# Usage:
+# ./kkurl thunder://QUFodHRwOi8vd3d3LmZyZWUtei5uZXQvMS5yYXJaWg==
+#
+# Pitfalls:
+# you should manually escape special characters in URL
+#
+# Author: Wei Xie <XieConnect (at) gmail.com>
+
+require 'base64'
+
+def print_usage
+  puts "== Usage: \n\t./kkurl thunder://QUFodHRwOi8vd3d3LmZyZWUtei5uZXQvMS5yYXJaWg=="
+end
+
+def decode_url(encoded_url)
+  Base64.decode64(encoded_url)
+end
+
+
+if ARGV[0].nil?
+  puts "You should provide necessary params"
+  print_usage
+  exit
+end
+
+url = ARGV[0].split('://')
+str = decode_url(url[1].strip)
+
+case url[0].strip
+when 'thunder'
+  str = str.gsub(/^AA/, '').gsub(/ZZ$/, '')
+when 'Flashget'
+  str = str.gsub!(/&freeznet$/, '')
+when 'qqdl'
+
+when 'http'
+  str = ARGV[0]
+else
+  puts "#{url[0]} unsupported"
+  print_usage
+  exit
+end
+
+puts str
